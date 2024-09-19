@@ -24,9 +24,14 @@ export class AppComponent implements OnInit {
     });
 
     // Listen for room join confirmation
-    this.socket.on('joinedRoom', (room: string) => {
+    this.socket.on('joinedRoom', (room: {room:string,updatedCode:string}) => {
       console.log(`Joined room: ${room}`);
+      const roomData:any = room
+      console.log(`Joined room roomData: ${roomData}`);
       this.roomJoined = true;  // Set the flag to true to show the editor
+      if(roomData.updatedCode){
+        this.code = roomData.updatedCode
+      }
     });
   }
 
