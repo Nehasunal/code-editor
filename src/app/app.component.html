@@ -11,16 +11,27 @@
     </div>
   </div>
 </div>
-
+<!-- Custom Confirmation Dialog -->
+<div class="confirmation-dialog" *ngIf="showConfirmDialog">
+  <div class="confirmation-dialog-content">
+    <p>Are you sure you want to leave the room?</p>
+    <button (click)="confirmLeave()">Yes</button>
+    <button (click)="cancelLeave()">No</button>
+  </div>
+</div>
 <!-- Editor Container -->
 <div class="editor-container" *ngIf="roomJoined">
   <div class="room-info">
     <h2>Room Name: {{roomName}}</h2>
+    <h4>{{userMessage}}</h4>
   </div>
   <div class="editor">
     <textarea (input)="onCodeChange($event)" [value]="code"></textarea>
   </div>
-   <!-- Download Button -->
-  <button class="download-btn" (click)="downloadCode()">Download</button>
-
+  <div class="button-group">
+    <!-- Download Button -->
+    <button class="download-btn" (click)="downloadCode()">Download</button>
+    <!-- Leave Button -->
+    <button class="leave-btn" (click)="openConfirmDialog()">Leave Room</button>
+  </div>
 </div>

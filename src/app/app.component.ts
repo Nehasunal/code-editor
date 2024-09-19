@@ -12,7 +12,8 @@ export class AppComponent implements OnInit {
   code: string = '';  // This will hold the code in the editor
   roomName: string = '';  // Holds the room name
   roomJoined: boolean = false;  // Tracks if the room has been joined
-
+  showConfirmDialog: boolean = false;  // Track dialog visibility
+  userMessage: string = '';
   ngOnInit(): void {
     // Connect to the Socket.IO server
     this.socket = io('http://localhost:9000');
@@ -33,11 +34,19 @@ export class AppComponent implements OnInit {
         this.code = roomData.updatedCode
       }
     });
+
+    this.socket.on('userDisconnected', (message: string) => {
+      this.userMessage = message  // Handle user disconnection message
+      setTimeout(() => {
+        this.userMessage = '';
+      }, 5000);
+    });
   }
 
   // Emit code changes when the user types
-  onCodeChange(event: any) {
-    this.code = event.target.value;
+  onCodeChange(event: Event) {
+    const target = event.target as HTMLTextAreaElement;
+    this.code = target.value;
     if (this.roomName) {
       this.socket.emit('codeChange', { room: this.roomName, codeUpdate: this.code });
     }
@@ -59,5 +68,21 @@ export class AppComponent implements OnInit {
     anchor.download = this.roomName ? `${this.roomName}_code.txt` : 'code.txt';
     anchor.click();
     window.URL.revokeObjectURL(url);  // Free up memory
+  }
+
+  openConfirmDialog() {
+    this.showConfirmDialog = true;
+  }
+
+  confirmLeave() {
+    this.showConfirmDialog = false;
+    this.socket.emit('leaveRoom', this.roomName);
+    this.roomJoined = false;
+    this.roomName = '';
+    this.code = '';
+  }
+
+  cancelLeave() {
+    this.showConfirmDialog = false;
   }
 }
