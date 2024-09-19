@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { io } from 'socket.io-client';
-
+import { timer } from 'rxjs';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -14,21 +14,20 @@ export class AppComponent implements OnInit {
   roomJoined: boolean = false;  // Tracks if the room has been joined
   showConfirmDialog: boolean = false;  // Track dialog visibility
   userMessage: string = '';
+  private pingInterval = 13 * 60 * 1000; // 13 minutes in milliseconds
+  
   ngOnInit(): void {
     // Connect to the Socket.IO server
     this.socket = io('http://localhost:9000');
-
+    this.startPeriodicPing();
     // Listen for real-time code changes
     this.socket.on('codeChange', (codeUpdate: string) => {
-      console.log('Code updated:', codeUpdate);
       this.code = codeUpdate;  // Update the code in the editor
     });
 
     // Listen for room join confirmation
     this.socket.on('joinedRoom', (room: {room:string,updatedCode:string}) => {
-      console.log(`Joined room: ${room}`);
       const roomData:any = room
-      console.log(`Joined room roomData: ${roomData}`);
       this.roomJoined = true;  // Set the flag to true to show the editor
       if(roomData.updatedCode){
         this.code = roomData.updatedCode
@@ -84,5 +83,20 @@ export class AppComponent implements OnInit {
 
   cancelLeave() {
     this.showConfirmDialog = false;
+  }
+
+  private startPeriodicPing(): void {
+    if (this.socket) {
+      timer(0, this.pingInterval).subscribe(() => {
+        this.pingBackend();
+      });
+    }
+  }
+
+  private pingBackend(): void {
+    if (this.socket) {
+      this.socket.emit('ping'); // Emit a 'ping' event to the server
+      console.log('Ping sent to backend');
+    }
   }
 }
