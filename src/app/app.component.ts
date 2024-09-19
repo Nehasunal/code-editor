@@ -49,4 +49,15 @@ export class AppComponent implements OnInit {
       this.socket.emit('joinRoom', this.roomName);
     }
   }
+
+  // Download the code as a file
+  downloadCode() {
+    const blob = new Blob([this.code], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = this.roomName ? `${this.roomName}_code.txt` : 'code.txt';
+    anchor.click();
+    window.URL.revokeObjectURL(url);  // Free up memory
+  }
 }
