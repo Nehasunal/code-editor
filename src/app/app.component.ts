@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   
   ngOnInit(): void {
     // Connect to the Socket.IO server
-    this.socket = io('http://localhost:9000');
+    this.socket = io('https://code-editor-be-ppww.onrender.com');
     this.startPeriodicPing();
     // Listen for real-time code changes
     this.socket.on('codeChange', (codeUpdate: string) => {
@@ -98,7 +98,7 @@ export class AppComponent implements OnInit {
       this.socket.emit('ping'); // Emit a 'ping' event to the server
       console.log('Ping sent to backend');
     }else{
-      this.socket = io('http://localhost:9000');
+      this.socket = io('https://code-editor-be-ppww.onrender.com');
     }
   }
 }
