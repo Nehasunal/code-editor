@@ -87,9 +87,9 @@ export class AppComponent implements OnInit {
 
   private startPeriodicPing(): void {
     if (this.socket) {
-      timer(0, this.pingInterval).subscribe(() => {
+      setInterval(()=>{
         this.pingBackend();
-      });
+      }, this.pingInterval)
     }
   }
 
@@ -97,6 +97,8 @@ export class AppComponent implements OnInit {
     if (this.socket) {
       this.socket.emit('ping'); // Emit a 'ping' event to the server
       console.log('Ping sent to backend');
+    }else{
+      this.socket = io('http://localhost:9000');
     }
   }
 }
